@@ -1,0 +1,124 @@
+{
+  "SEED": 42,
+  "device": "cuda",
+  "prefix_fm": "darcy",
+  "prefix_inverse": "darcy",
+  "prefix_am":  "darcy",
+  "save_root_path": "saved_models",
+  "dataset": "darcy",
+  "data_path": "darcy_dataset.pt",
+
+  "do_fm": true,
+  "do_inverse": true,
+  "do_am": true,
+  "data_args": {
+          "latent_fm": false,
+          "size_data": [64, 64],
+          "channels_data": 1
+  },
+
+  "flow_matching": {
+      "backbone": {
+        "type": "UFNO2d",
+        "args": {
+          "n_layers": 4,
+          "pad_mode": "reflect",
+          "in_channels": 1,
+          "d_emb_time": 32,
+          "d_emb_space": 32,
+          "out_channels": 1,
+          "hidden_lift": 256,
+          "modes_fno": [32, 32],
+          "width_fno": 32,
+          "base_unet": [32, 32, 32, 32],
+          "emb_unet": 64,
+          "attn_at": [],
+          "heads": 4
+        }
+      },
+      "training": {
+          "batch_size": 128,
+          "lr": 0.0001,
+          "p_warmup": 0.01,
+          "ema_decay": 0.9998,
+          "n_epochs": 300,
+          "n_workers_loader": 4,
+          "save_every": 500
+      }
+  },
+
+  "adjoint_matching": {
+      "use_ema_weights": true,
+      "residual": {
+          "type": "darcy",
+          "args": {
+              "f": 1.0,
+              "x_range": [0.0, 1.0],
+              "y_range": [0.0, 1.0],
+              "sigma_range": [3.0, 10.0],
+              "test_fun": "wd_wv",
+              "lam_bc": 0.0
+          }
+          },
+      "inverse_module": {
+          "backbone": {
+            "type": "UFNO2d",
+            "args": {
+                "n_layers": 2,
+                "pad_mode": "reflect",
+                "in_channels": 1,
+                "d_emb_time": 0,
+                "d_emb_space": 32,
+                "out_channels": 1,
+                "hidden_lift": 256,
+                "modes_fno": [32, 32],
+                "width_fno": 32,
+                "base_unet": [64, 64, 96, 128],
+                "emb_unet": 64,
+                "attn_at": [2, 3],
+                "heads": 4,
+                "output_size": [64, 64]
+            }
+          }
+      },
+      "inverse_pretraining": {
+        "n_epochs": 100,
+        "n_data": 1024,
+        "batch_size": 32,
+        "lr": 0.0001,
+        "weight_decay": 0.01,
+        "steps_sampling": 100
+      },
+
+      "model_finetune": {
+        "backbone": {
+            "type": "UFNO2dFinetune",
+            "args": {
+                    "base_unet": [64, 64, 96, 128],
+                    "emb_unet": 64,
+                    "hidden_unet": 256,
+                    "attn_at": [2, 3],
+                    "heads_unet": 4,
+                    "d_alpha": 1
+              }
+          }
+        },
+      "training": {
+        "use_tilted_time": true,
+        "q": 0.9,
+        "use_checkpointing": false,
+        "lam_x": 1000.0,
+        "lam_alpha": 1000.0,
+        "reg_scaling": 1.0,
+        "K": 20,
+        "qt_steps_end": 0.8,
+        "kappa_memoryless": 0.9,
+        "steps": 100,
+        "n_epochs": 20,
+        "save_every": 500,
+        "lr": 0.00002,
+        "n_rollouts": 1,
+        "batch_size": 15
+      }
+}
+}

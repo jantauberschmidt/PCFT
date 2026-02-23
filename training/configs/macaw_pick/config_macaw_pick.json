@@ -1,0 +1,101 @@
+{
+  "SEED": 42,
+  "device": "cuda",
+  "prefix_fm": "lfm_dit",
+  "prefix_inverse": "macaw_popart",
+  "prefix_am":  "macaw_popart_1k",
+  "save_root_path": "saved_models",
+  "dataset": null,
+  "data_path": null,
+
+  "do_fm": false,
+  "do_inverse": true,
+  "do_am": true,
+  "data_args": {
+        "latent_fm": true,
+        "size_data": [32, 32],
+        "channels_data": 4
+  },
+
+  "flow_matching": {
+      "backbone": {
+        "type": "DiT",
+        "args": {
+          "class_idx": 88,
+          "cfg_scale": 4.0
+        }
+      },
+      "training": {
+          "batch_size": 384,
+          "lr": 0.0001,
+          "p_warmup": 0.01,
+          "ema_decay": 0.9998,
+          "n_epochs": 1000,
+          "n_workers_loader": 8,
+          "save_every": 50
+      }
+  },
+
+  "adjoint_matching": {
+      "use_ema_weights": false,
+      "residual": {
+          "type": "pickscore",
+          "args": {
+              "mode": "joint",
+              "prompt": "close-up Pop Art of a macaw parrot."
+              }
+          },
+      "inverse_module": {
+          "backbone": {
+            "type": "color",
+            "args": {
+                "d_poly": 3,
+                "d_proj": 128,
+                "d_hidden": 64
+            }
+          }
+      },
+      "inverse_pretraining": {
+        "n_epochs": 100,
+        "n_data": 256,
+        "batch_size": 32,
+        "lr": 0.0005,
+        "weight_decay": 0.01,
+        "steps_sampling": 40
+      },
+
+      "model_finetune": {
+        "backbone": {
+            "type": "UNet2dFinetune",
+            "args": {
+                    "d_alpha": 20,
+                    "k_alpha": 16,
+                    "d_proj_alpha": 128,
+                    "d_hidden_alpha": 64,
+                    "base_unet": [96, 128, 160, 192],
+                    "emb_unet": 96,
+                    "hidden_unet": 256,
+                    "attn_at": [2,3],
+                    "heads_unet": 8
+              }
+          }
+        },
+      "training": {
+        "use_tilted_time": false,
+        "q": 1.0,
+        "use_checkpointing": false,
+        "lam_x": 1000.0,
+        "lam_alpha": 1000.0,
+        "reg_scaling": 0.0,
+        "K": 10,
+        "qt_steps_end": 0.75,
+        "kappa_memoryless": 0.0,
+        "steps": 40,
+        "n_epochs": 100,
+        "save_every": 500,
+        "lr": 0.00002,
+        "n_rollouts": 1,
+        "batch_size": 15
+      }
+}
+}
