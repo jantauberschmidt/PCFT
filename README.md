@@ -61,12 +61,13 @@ and data-efficient modelling of physical systems.
 ***Cite as:*** 
 
 ```latex
-@inproceedings{pcft2026,
-    title={Physics-Constrained Fine-Tuning of Flow-Matching Models for Generation and Inverse Problems},
-    author={Jan Tauberschmidt and Sophie Fellenz and Sebastian J. Vollmer and Andrew B. Duncan},
-    booktitle={The Fourteenth International Conference on Learning Representations},
-    year={2026},
-    url={https://openreview.net/forum?id=khBHJz2wcV}
+@inproceedings{
+  tauberschmidt2026physicsconstrained,
+  title={Physics-Constrained Fine-Tuning of Flow-Matching Models for Generation and Inverse Problems},
+  author={Jan Tauberschmidt and Sophie Fellenz and Sebastian Josef Vollmer and Andrew B. Duncan},
+  booktitle={The Fourteenth International Conference on Learning Representations},
+  year={2026},
+  url={https://openreview.net/forum?id=khBHJz2wcV}
 }
 ```
 
